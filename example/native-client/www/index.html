@@ -55,16 +55,16 @@
 
         // client information
         var client = {
-          'client_id': 'native-client-1',
-          'client_secret': 'oauth-native-secret-1',
+          'client_id': '207426926058702',
+          'client_secret': 'f7ae2f4cf59cbaf39d3c14a7fc3d9e44',
           'redirect_uris': ['http://localhost:9000'],
-          'scope': 'openid profile email address phone'
+          'scope': ''
         };
 
         // authorization server information
         var authServer = {
-          authorizationEndpoint: 'http://localhost:9001/authorize',
-          tokenEndpoint: 'http://localhost:9001/token'
+          authorizationEndpoint: 'https://graph.facebook.com/oauth/authorize',
+          tokenEndpoint: 'https://graph.facebook.com/oauth/access_token'
         };
 
         var protectedResource = 'http://localhost:9002/resource';
@@ -137,18 +137,13 @@
             }
           });          
 
-          if (callbackData.state !== localStorage.getItem('oauth-state')) {
-            console.log('State DOES NOT MATCH: expected %s got %s', localStorage.getItem('oauth-state'), callbackData.state);
-            callbackData = null;
-            $('.oauth-protected-resource').text("Error state value did not match");
-          } else {
+ 
             //$('.oauth-access-token').text(callbackData.access_token);
             //console.log('authorization code is %s',callbackData.code);
             $.ajax({
               url: authServer.tokenEndpoint,
               type: 'POST',
               crossDomain: true,
-              dataType: 'json',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'                 
               },
@@ -157,15 +152,16 @@
                 code: callbackData.code,
                 client_id: client.client_id,
                 client_secret: client.client_secret,
+                redirect_uri: 'http://localhost:9000/',
               }
             }).done(function(data) {
-              $('.oauth-access-token').text(data.access_token);
-              callbackData.access_token = data.access_token;
+              $('.oauth-access-token').text(data);
+              callbackData.access_token = data;
             }).fail(function() {
               $('.oauth-protected-resource').text('Error while getting the access token');
             });
 
-          }
+          
         }
 
         // fill placeholder on UI
